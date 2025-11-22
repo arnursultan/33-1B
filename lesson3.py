@@ -78,3 +78,28 @@ class WidgetsDemo(QWidget):
         pal = self.label.palette()
         pal.setColor(QPalette.ColorRole.WindowText, QColor(color))
         self.label.setPalette(pal)
+
+    def set_font_size(self, size):
+        f = self.label.font(); f.setPointSize(size)
+        self.label.setFont(f)
+        self.font_size_label.setText(f"Размер шрифта: {size}")
+
+    def block_mood(self):
+        box = QGroupBox("5. Настроение")
+        mood_label = QLabel("Ваше настроение: неизвестно")
+        combo = QComboBox()
+        combo.addItems(["Нормально", "Отлично", "Хочу спать", "Зол", "Учусь PyQt6", "Сигма"])
+        combo.currentTextChanged.connect(
+            lambda t:mood_label.setText(f"Ваше настроение: {t}")
+        )
+        h = QHBoxLayout(); h.addWidget(combo); h.addWidget(mood_label)
+        box.setLayout(h); return box
+
+def main():
+    app = QApplication(sys.argv)
+    w = WidgetsDemo()
+    w.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
