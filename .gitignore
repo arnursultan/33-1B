@@ -1,3 +1,7 @@
 venv/
 
 .idea/
+
+ls_contacts.db
+ourdb.sqlite
+users.db
