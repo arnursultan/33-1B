@@ -1,7 +1,16 @@
 venv/
 
-.idea/
-
+db.sqlite3
 ls_contacts.db
 ourdb.sqlite
 users.db
+
+.idea/
+
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+*.log
+
