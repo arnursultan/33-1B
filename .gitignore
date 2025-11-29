@@ -1,10 +1,5 @@
 venv/
 
-db.sqlite3
-ls_contacts.db
-ourdb.sqlite
-users.db
-
 .idea/
 
 __pycache__/
