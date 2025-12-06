@@ -8,6 +8,7 @@ import sys
 def get_connection():
     return psycopg2.connect(
         host='localhost',
+        port='5433',
         database='academy',
         user='postgres',
         password='1234',
@@ -75,12 +76,31 @@ class AcademyApp(QWidget):
         self.btn_update = QPushButton("Изменить")
         self.btn_delete = QPushButton("Удалить")
 
+        btns.addWidget(self.btn_update)
+        btns.addWidget(self.btn_delete)
+
         self.btn_update.clicked.connect(self.update_row)
-        self.btn_delete.clicked.connect(self.btn_delete)
+        self.btn_delete.clicked.connect(self.delete_row)
 
         layout.addLayout(btns)
 
         self.setLayout(layout)
+
+    def create_table(self):
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS students (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                age INTEGER,
+                email VARCHAR(100),
+            );
+        """)
+
+        conn.commit()
+        conn.close()
 
         self.load_data()
 
