@@ -95,3 +95,51 @@ class AcademyApp(QWidget):
         for i, row in enumerate(rows):
             for j, val in enumerate(row):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
+
+    def search(self, text):
+        rows = search_students(text)
+        self.table.setRowCount(len(rows))
+
+        for i, row in enumerate(rows):
+            for j, val in enumerate(row):
+                self.table.setItem(i, j, QTableWidgetItem(str(val)))
+
+    def select_row(self, row, column):
+        self.selected_id = int(self.table.item(row, 0).text())
+        self.name_input.setText(row(self.table.item(row, 1).text()))
+        self.age_input.setText(self.table.item(row, 2).text())
+        self.email_input.setText(self.table.item(row, 3).text())
+
+    def delete_row(self):
+        if not self.selected_id:
+            QMessageBox.warning(self, "Ошибка", "Сначала выберите строку.")
+            return
+
+        delete_student(self.selected_id)
+        QMessageBox.information(self, "Успех", "Запись удалена")
+
+        self.load_data()
+        self.selected_id = None
+
+    def update_row(self):
+        if not self.selected_id:
+            QMessageBox.warning(self, "Ошибка", "Выберите строку для изменения.")
+            return
+
+        name = self.name_input.text()
+        age = self.age_input.text()
+        email = self.email_input.text()
+
+        if not name or not age or not email:
+            QMessageBox.warning(self, "Ошибка", "Заполните все поля.")
+            return
+
+        update_students(self.selected_id, name, age, email)
+        QMessageBox.information(self, "Успех", "Запись успешно изменена.")
+
+        self.load_data()
+
+app = QApplication(sys.argv)
+window = AcademyApp()
+window.show()
+sys.exit(app.exec())
