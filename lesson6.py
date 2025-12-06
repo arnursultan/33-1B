@@ -55,7 +55,7 @@ class AcademyApp(QWidget):
         layout.addWidget(self.search_input)
 
         self.table = QTableWidget()
-        self.table.setColumnHidden(4)
+        self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(["ID", "Name", "Age", "Email"])
         layout.addWidget(self.table)
 
