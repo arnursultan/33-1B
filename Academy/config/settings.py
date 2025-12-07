@@ -1,7 +1,7 @@
 DB = {
     "host": "localhost",
     "port": 5433,
-    "database": "...",
-    "user": "...",
-    "password": "...",
+    "database": "academy",
+    "user": "postgres",
+    "password": "Nursultan04",
 }
