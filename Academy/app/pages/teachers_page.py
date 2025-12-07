@@ -1,43 +1,51 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem,
-    QLineEdit, QPushButton, QHBoxLayout, QLabel, QMessageBox, QFileDialog
+    QLineEdit, QPushButton, QHBoxLayout, QLabel, QComboBox,
+    QMessageBox, QFileDialog
 )
-from app.controllers.students_controller import StudentsController
+from app.controllers.teachers_controller import TeachersController
 from app.widgets.icon_loader import IconLoader
 from app.events import events
 import csv
 
 
-class StudentsPage(QWidget):
+class TeachersPage(QWidget):
     def __init__(self, user):
         super().__init__()
         self.user = user
-        self.controller = StudentsController()
+        self.controller = TeachersController()
 
         IconLoader.subscribe(self)
         events.theme_changed.connect(self.refresh_icons)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Students"))
+        layout.addWidget(QLabel("Teachers"))
 
-        self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["ID", "Name", "Age", "Email"])
+        self.table = QTableWidget(0, 7)
+        self.table.setHorizontalHeaderLabels([
+            "ID", "Full Name", "Subject", "Email",
+            "Phone", "Experience", "Status"
+        ])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSortingEnabled(True)
         layout.addWidget(self.table)
 
         form = QHBoxLayout()
-        self.name = QLineEdit()
-        self.age = QLineEdit()
-        self.email = QLineEdit()
+        self.fn = QLineEdit();   self.fn.setPlaceholderText("Full Name")
+        self.subj = QLineEdit(); self.subj.setPlaceholderText("Subject")
+        self.email = QLineEdit();self.email.setPlaceholderText("Email")
+        self.phone = QLineEdit();self.phone.setPlaceholderText("Phone")
+        self.exp = QLineEdit();  self.exp.setPlaceholderText("Experience (years)")
 
-        self.name.setPlaceholderText("Name")
-        self.age.setPlaceholderText("Age")
-        self.email.setPlaceholderText("Email")
+        self.status = QComboBox()
+        self.status.addItems(["active", "inactive", "vacation"])
 
-        form.addWidget(self.name)
-        form.addWidget(self.age)
+        form.addWidget(self.fn)
+        form.addWidget(self.subj)
         form.addWidget(self.email)
+        form.addWidget(self.phone)
+        form.addWidget(self.exp)
+        form.addWidget(self.status)
         layout.addLayout(form)
 
         buttons = QHBoxLayout()
@@ -50,7 +58,6 @@ class StudentsPage(QWidget):
         buttons.addWidget(self.btn_update)
         buttons.addWidget(self.btn_delete)
         buttons.addWidget(self.btn_export)
-
         layout.addLayout(buttons)
 
         self.table.cellClicked.connect(self.select_row)
@@ -74,7 +81,7 @@ class StudentsPage(QWidget):
         self.btn_add.setIcon(IconLoader.load("add"))
         self.btn_update.setIcon(IconLoader.load("edit"))
         self.btn_delete.setIcon(IconLoader.load("delete"))
-        self.btn_export.setIcon(IconLoader.load("export") if hasattr(IconLoader, "load") else IconLoader.load("students"))
+        self.btn_export.setIcon(IconLoader.load("export") if hasattr(IconLoader, "load") else IconLoader.load("teachers"))
 
     def load(self):
         rows = self.controller.get_all()
@@ -85,15 +92,17 @@ class StudentsPage(QWidget):
 
     def select_row(self, row, col):
         self.selected_id = int(self.table.item(row, 0).text())
-        self.name.setText(self.table.item(row, 1).text())
-        self.age.setText(self.table.item(row, 2).text())
+        self.fn.setText(self.table.item(row, 1).text())
+        self.subj.setText(self.table.item(row, 2).text())
         self.email.setText(self.table.item(row, 3).text())
+        self.phone.setText(self.table.item(row, 4).text())
+        self.exp.setText(self.table.item(row, 5).text())
+        self.status.setCurrentText(self.table.item(row, 6).text())
 
     def add(self):
         msg = self.controller.add(
-            self.name.text(),
-            self.age.text(),
-            self.email.text()
+            self.fn.text(), self.subj.text(), self.email.text(),
+            self.phone.text(), self.exp.text(), self.status.currentText()
         )
         if msg != "ok":
             QMessageBox.warning(self, "Error", msg)
@@ -103,9 +112,8 @@ class StudentsPage(QWidget):
     def update(self):
         msg = self.controller.update(
             self.selected_id,
-            self.name.text(),
-            self.age.text(),
-            self.email.text()
+            self.fn.text(), self.subj.text(), self.email.text(),
+            self.phone.text(), self.exp.text(), self.status.currentText()
         )
         if msg != "ok":
             QMessageBox.warning(self, "Error", msg)
@@ -114,13 +122,13 @@ class StudentsPage(QWidget):
 
     def delete(self):
         if not self.selected_id:
-            QMessageBox.warning(self, "Error", "Select a student first")
+            QMessageBox.warning(self, "Error", "Select a teacher first")
             return
 
         reply = QMessageBox.question(
             self,
             "Confirm delete",
-            "Are you sure you want to delete this student?",
+            "Are you sure you want to delete this teacher?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if reply != QMessageBox.StandardButton.Yes:
@@ -136,15 +144,15 @@ class StudentsPage(QWidget):
     def export_csv(self):
         path, _ = QFileDialog.getSaveFileName(
             self,
-            "Export students to CSV",
-            "students.csv",
+            "Export teachers to CSV",
+            "teachers.csv",
             "CSV Files (*.csv)"
         )
         if not path:
             return
 
         rows = self.controller.get_all()
-        headers = ["ID", "Name", "Age", "Email"]
+        headers = ["ID", "Full Name", "Subject", "Email", "Phone", "Experience", "Status"]
 
         try:
             with open(path, "w", newline="", encoding="utf-8") as f:
@@ -152,6 +160,6 @@ class StudentsPage(QWidget):
                 writer.writerow(headers)
                 for row in rows:
                     writer.writerow(row)
-            QMessageBox.information(self, "Done", "Students exported successfully")
+            QMessageBox.information(self, "Done", "Teachers exported successfully")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to export: {e}")
