@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QListWidgetItem, QLabel, QPushButton
 from PyQt6.QtCore import pyqtSignal, QPropertyAnimation, QEasingCurve
 from app.events import events
 from app.widgets.icon_loader import IconLoader
@@ -14,7 +14,6 @@ class Sidebar(QWidget):
         self._anim = None
 
         self.setFixedWidth(200)
-        IconLoader.subscribe(self)
         events.theme_changed.connect(self.refresh_icons)
 
         layout = QVBoxLayout(self)
@@ -31,7 +30,17 @@ class Sidebar(QWidget):
         layout.addWidget(self.title)
 
         self.menu = QListWidget()
-        self.menu.addItems(["Students", "Teachers", "Settings"])
+
+        menu_items = [
+            ("Students", "students"),
+            ("Teachers", "teachers"),
+            ("Settings", "settings"),
+        ]
+
+        for text, icon_name in menu_items:
+            item = QListWidgetItem(text)
+            item.setIcon(IconLoader.get(icon_name))
+            self.menu.addItem(item)
 
         if user.role != "admin":
             self.menu.takeItem(2)
@@ -40,6 +49,15 @@ class Sidebar(QWidget):
         layout.addWidget(self.menu)
 
         self.menu.setCurrentRow(0)
+
+    def refresh_icons(self):
+        for i in range(self.menu.count()):
+            item = self.menu.item(i)
+            text = item.text()
+            icon_name = text.lower()
+            item.setIcon(IconLoader.get(icon_name))
+
+        self.menu.repaint()
 
     def toggle_sidebar(self):
         start = self.width()
@@ -60,8 +78,10 @@ class Sidebar(QWidget):
 
         if not self.expanded:
             self.title.setText("")
+            for i in range(self.menu.count()):
+                self.menu.item(i).setText("")
         else:
             self.title.setText("Academy")
-
-    def refresh_icons(self):
-        self.menu.repaint()
+            menu_texts = ["Students", "Teachers", "Settings"]
+            for i in range(self.menu.count()):
+                self.menu.item(i).setText(menu_texts[i])

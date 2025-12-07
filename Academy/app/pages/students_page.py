@@ -54,7 +54,6 @@ class StudentsPage(QWidget):
         layout.addLayout(buttons)
 
         self.table.cellClicked.connect(self.select_row)
-
         self.btn_add.clicked.connect(self.add)
         self.btn_update.clicked.connect(self.update)
         self.btn_delete.clicked.connect(self.delete)
@@ -71,10 +70,10 @@ class StudentsPage(QWidget):
         self.load()
 
     def refresh_icons(self):
-        self.btn_add.setIcon(IconLoader.load("add"))
-        self.btn_update.setIcon(IconLoader.load("edit"))
-        self.btn_delete.setIcon(IconLoader.load("delete"))
-        self.btn_export.setIcon(IconLoader.load("export") if hasattr(IconLoader, "load") else IconLoader.load("students"))
+        self.btn_add.setIcon(IconLoader.get("add"))
+        self.btn_update.setIcon(IconLoader.get("edit"))
+        self.btn_delete.setIcon(IconLoader.get("delete"))
+        self.btn_export.setIcon(IconLoader.get("export") or IconLoader.get("students"))
 
     def load(self):
         rows = self.controller.get_all()
@@ -130,6 +129,7 @@ class StudentsPage(QWidget):
         if msg != "ok":
             QMessageBox.warning(self, "Error", msg)
             return
+
         self.selected_id = None
         self.load()
 

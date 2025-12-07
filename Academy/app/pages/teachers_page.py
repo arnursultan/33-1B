@@ -78,10 +78,10 @@ class TeachersPage(QWidget):
         self.load()
 
     def refresh_icons(self):
-        self.btn_add.setIcon(IconLoader.load("add"))
-        self.btn_update.setIcon(IconLoader.load("edit"))
-        self.btn_delete.setIcon(IconLoader.load("delete"))
-        self.btn_export.setIcon(IconLoader.load("export") if hasattr(IconLoader, "load") else IconLoader.load("teachers"))
+        self.btn_add.setIcon(IconLoader.get("add"))
+        self.btn_update.setIcon(IconLoader.get("edit"))
+        self.btn_delete.setIcon(IconLoader.get("delete"))
+        self.btn_export.setIcon(IconLoader.get("export") or IconLoader.get("teachers"))
 
     def load(self):
         rows = self.controller.get_all()
@@ -138,6 +138,7 @@ class TeachersPage(QWidget):
         if msg != "ok":
             QMessageBox.warning(self, "Error", msg)
             return
+
         self.selected_id = None
         self.load()
 

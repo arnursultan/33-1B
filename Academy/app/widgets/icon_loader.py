@@ -1,17 +1,38 @@
+from pathlib import Path
 from PyQt6.QtGui import QIcon
+from config.user_settings import load_settings, save_settings
 
 
 class IconLoader:
-    current_theme = "dark"
+
+    ICON_DIR = Path(__file__).resolve().parent.parent / "icons"
     subscribers = []
+    theme = None
+
+    @staticmethod
+    def load_theme():
+        settings = load_settings()
+        IconLoader.theme = settings.get("theme", "dark").lower()
 
     @staticmethod
     def set_theme(theme: str):
-        IconLoader.current_theme = theme
+        theme = theme.lower()
+
+        settings = load_settings()
+        settings["theme"] = theme
+        save_settings(settings)
+
+        IconLoader.theme = theme
 
     @staticmethod
-    def load(name: str) -> QIcon:
-        return QIcon(f"app/icons/{IconLoader.current_theme}/{name}.png")
+    def get(name: str) -> QIcon:
+
+        if IconLoader.theme is None:
+            IconLoader.load_theme()
+
+        filename = name.lower() + ".png"
+        path = IconLoader.ICON_DIR / IconLoader.theme / filename
+        return QIcon(str(path))
 
     @staticmethod
     def subscribe(widget):
@@ -19,6 +40,6 @@ class IconLoader:
 
     @staticmethod
     def refresh_all():
-        for w in IconLoader.subscribers:
-            if hasattr(w, "refresh_icons"):
-                w.refresh_icons()
+        for widget in IconLoader.subscribers:
+            if hasattr(widget, "refresh_icons"):
+                widget.refresh_icons()

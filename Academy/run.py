@@ -29,14 +29,17 @@ class SplashScreen(QWidget):
         )
 
         layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(10)
+        layout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         self.logo = QLabel()
         self.logo.setPixmap(pix)
+        self.logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.logo)
 
         self.text = QLabel("Loading system…")
-        self.text.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px;")
+        self.text.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 5px;")
         self.text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.text)
 
@@ -80,13 +83,15 @@ class SplashScreen(QWidget):
 def main():
     app = QApplication(sys.argv)
 
-    import ctypes
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("academy.pro")
+    try:
+        import ctypes
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("academy.pro")
+    except Exception:
+        pass
 
     BASE = Path(__file__).resolve().parent
     ICON_PATH = BASE / "app" / "icon.ico"
     print("APP ICON:", ICON_PATH, ICON_PATH.exists())
-
     app.setWindowIcon(QIcon(str(ICON_PATH)))
 
     settings = load_settings()
