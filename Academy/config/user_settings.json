@@ -1,4 +1,4 @@
 {
-    "animation": "flip",
-    "theme": "light"
+    "animation": "slide_fade",
+    "theme": "dark"
 }
