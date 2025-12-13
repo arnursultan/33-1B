@@ -1,4 +1,12 @@
+altgraph==0.17.5
+packaging==25.0
+pefile==2024.8.26
 psycopg2==2.9.11
+pyinstaller==6.17.0
+pyinstaller-hooks-contrib==2025.10
 PyQt6==6.10.0
 PyQt6-Qt6==6.10.0
 PyQt6_sip==13.10.2
+python-dotenv==1.2.1
+pywin32-ctypes==0.2.3
+setuptools==80.9.0

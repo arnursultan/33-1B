@@ -4,6 +4,10 @@ venv/
 
 **/.env
 
+lesson9.spec
+
+dist
+build
 
 __pycache__/
 **/__pycache__/
